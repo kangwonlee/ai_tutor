@@ -21,6 +21,11 @@ This submodule provides automated feedback for Python programming assignments by
    ``` bash
    git submodule add https://url-to-this-repository [ai_tutor]
    ```
+1. **Set API key:** Ensure the `GOOGLE_API_KEY` environment variable is set in your main project's environment.
+1. **Run pytest:** Execute your pytest test suite as you normally would.
+1. **Check output:** The AI Tutor's feedback will be printed to the console after the test execution.
+
+### Possible `yaml` file changes
 1. For the `.github` YAML file of the template repository, please checkout with submodules.
    ``` yaml
     - name: Checkout code
@@ -28,9 +33,48 @@ This submodule provides automated feedback for Python programming assignments by
       with:
         submodules: 'true'
    ```
-1. **Set API key:** Ensure the `GOOGLE_API_KEY` environment variable is set in your main project's environment.
-1. **Run pytest:** Execute your pytest test suite as you normally would.
-1. **Check output:** The AI Tutor's feedback will be printed to the console after the test execution.
+1. Before running tests, please set report file name variables.
+   ``` yaml   
+    - name: Set report file names
+      id: json
+      run: |
+        echo "syntax=report_syntax.json" >> $GITHUB_OUTPUT
+        echo "results=report_results.json" >> $GITHUB_OUTPUT
+   ```
+1. Generate JSON reports while running the test.
+   ``` yaml   
+    - name: check syntax
+      id: check-syntax
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: check syntax
+        setup-command: ". test-env/bin/activate && echo $VIRTUAL_ENV && python -m pip list"
+        command: ". test-env/bin/activate && python -m pytest --json-report --json-report-file=${{ steps.json.outputs.syntax }} tests/test_syntax.py"
+        timeout: 1
+        max-score: 3
+
+    - name: test results
+      id: test-results
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test results
+        setup-command: ". test-env/bin/activate && echo $VIRTUAL_ENV && python -m pip list"
+        command: ". test-env/bin/activate && python -m pytest -n auto --json-report --json-report-file=${{ steps.json.outputs.results }} tests/test_results.py"
+        timeout: 2
+        max-score: 2
+   ```
+1. After the tests, run the AI Tutor to generate comments.
+   ``` yaml   
+    - name: AI Tutor
+      id: ai_tutor
+      if: always()
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        SYNTAX_REPORT: ${{ steps.json.outputs.syntax }}
+        RESULTS_REPORT: ${{ steps.json.outputs.results }}
+      run: . test-env/bin/activate && echo $VIRTUAL_ENV && python -m pytest ./ai_tutor/ai_tutor.py
+      timeout-minutes: 5
+   ```
 
 ## Important Notes
 
