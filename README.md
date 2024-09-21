@@ -18,9 +18,12 @@ This submodule provides automated feedback for Python programming assignments by
 ## How to use
 
 1. **Include as submodule:** Add this repository as a submodule to your Github Classroom template repository.
-2. **Set API key:** Ensure the `GOOGLE_API_KEY` environment variable is set in your main project's environment.
-3. **Run pytest:** Execute your pytest test suite as you normally would.
-4. **Check output:** The AI Tutor's feedback will be printed to the console after the test execution.
+   ``` bash
+   git submodule add https://url-to-this-repository [ai_tutor]
+   ```
+1. **Set API key:** Ensure the `GOOGLE_API_KEY` environment variable is set in your main project's environment.
+1. **Run pytest:** Execute your pytest test suite as you normally would.
+1. **Check output:** The AI Tutor's feedback will be printed to the console after the test execution.
 
 ## Important Notes
 
