@@ -22,8 +22,9 @@ logging.basicConfig(level=logging.INFO)
 RESOURCE_EXHAUSTED = 429
 
 
-if not GOOGLE_API_KEY:
-    pytest.fail('API KEY NOT Available')
+def test_API_key():
+    if not GOOGLE_API_KEY:
+        pytest.fail('API KEY NOT Available')
 
 
 def tutor_folder() -> pathlib.Path:
