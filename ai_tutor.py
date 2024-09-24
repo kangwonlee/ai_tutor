@@ -189,7 +189,9 @@ def collect_longrepr(data:Dict[str, str]) -> List[str]:
     # Collect questions from tests not-passed yet
     for r in data['tests']:
         if r['outcome'] != 'passed':
-            longrepr_list.append(get_question(r['call']['longrepr']))
+            for k in r:
+                if isinstance(r[k], dict) and 'longrepr' in r[k]:
+                    longrepr_list.append(r['outcome'] + ':' + k + ':' + r[k]['longrepr'])
     return longrepr_list
 
 
