@@ -5,7 +5,7 @@ import os
 import pathlib
 import time
 
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 import pytest
@@ -169,11 +169,7 @@ def gemini_qna(report_paths):
     for report_path in report_paths:
         data = json.loads(report_path.read_text())
 
-        longrepr_list = []
-        # Collect questions from tests not-passed yet
-        for r in data['tests']:
-            if r['outcome'] != 'passed':
-                longrepr_list.append(get_question(r['call']['longrepr']))
+        longrepr_list = collect_longrepr(data)
 
         message_count += len(longrepr_list)
         questions += longrepr_list
@@ -185,6 +181,15 @@ def gemini_qna(report_paths):
         print(answers)  # Print the consolidated answers directly
 
     return message_count
+
+
+def collect_longrepr(data:Dict[str, str]) -> List[str]:
+    longrepr_list = []
+    # Collect questions from tests not-passed yet
+    for r in data['tests']:
+        if r['outcome'] != 'passed':
+            longrepr_list.append(get_question(r['call']['longrepr']))
+    return longrepr_list
 
 
 def get_question(longrepr:str) -> str:
