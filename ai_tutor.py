@@ -169,11 +169,14 @@ def gemini_qna(report_paths):
     for report_path in report_paths:
         data = json.loads(report_path.read_text())
 
+        longrepr_list = []
         # Collect questions from tests not-passed yet
         for r in data['tests']:
             if r['outcome'] != 'passed':
                 message_count += 1
-                questions.append(get_question(r['call']['longrepr']))
+                longrepr_list.append(get_question(r['call']['longrepr']))
+
+        questions += longrepr_list
 
     # Query Gemini with consolidated questions if there are any
     if questions:
