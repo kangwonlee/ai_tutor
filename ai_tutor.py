@@ -173,9 +173,9 @@ def gemini_qna(report_paths):
         # Collect questions from tests not-passed yet
         for r in data['tests']:
             if r['outcome'] != 'passed':
-                message_count += 1
                 longrepr_list.append(get_question(r['call']['longrepr']))
 
+        message_count += len(longrepr_list)
         questions += longrepr_list
 
     # Query Gemini with consolidated questions if there are any
